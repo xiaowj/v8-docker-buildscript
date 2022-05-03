@@ -1,0 +1,10 @@
+ARG BASE_IMAGE_TAG
+FROM archive94/v8-source-image:${BASE_IMAGE_TAG}
+
+# X86_64
+RUN gn gen out.gn/x64.release --args='target_os="android" target_cpu="x64" v8_target_cpu="x64" v8_use_external_startup_data=false v8_static_library=true use_custom_libcxx=false v8_monolithic=true is_component_build=false'
+# Build the V8 liblary
+RUN ninja -C out.gn/x64.release v8_monolith
+# Prepare files for archiving
+RUN rm -rf target/x86_64 && mkdir -p target/x86_64
+RUN cp -rf out.gn/x64.release/obj/libv8_monolith.a ./target/x86_64

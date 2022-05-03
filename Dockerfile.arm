@@ -1,0 +1,10 @@
+ARG BASE_IMAGE_TAG
+FROM archive94/v8-source-image:${BASE_IMAGE_TAG}
+
+# ARM
+RUN gn gen out.gn/arm.release --args='target_os="android" target_cpu="arm" v8_target_cpu="arm" v8_use_external_startup_data=false v8_static_library=true use_custom_libcxx=false v8_monolithic=true is_component_build=false'
+# Build the V8 liblary
+RUN ninja -C out.gn/arm.release v8_monolith
+# Prepare files for archiving
+RUN rm -rf target/armeabi-v7a && mkdir -p target/armeabi-v7a
+RUN cp -rf out.gn/arm.release/obj/libv8_monolith.a ./target/armeabi-v7a

@@ -1,0 +1,13 @@
+diff --git a/install-build-deps.sh b/install-build-deps.sh
+index 22ebc02a9..2aedf43de 100755
+--- a/install-build-deps.sh
++++ b/install-build-deps.sh
+@@ -654,7 +654,7 @@ fi
+ # The `sort -r -s -t: -k2` sorts all the :i386 packages to the front, to avoid
+ # confusing dpkg-query (crbug.com/446172).
+ packages="$(
+-  echo "${dev_list} ${lib_list} ${dbg_list} ${lib32_list} ${arm_list}" \
++  echo "${lib_list} ${dbg_list} ${lib32_list} ${arm_list}" \
+        "${nacl_list}" ${filtered_backwards_compatible_list} | tr " " "\n" | \
+        sort -u | sort -r -s -t: -k2 | tr "\n" " "
+ )"
