@@ -3,28 +3,26 @@
 # Based on Ubuntu
 ############################################################
 # Set the base image to Ubuntu
-FROM ubuntu:16.04
+FROM ubuntu:20.04
 # File Author / Maintainer
 MAINTAINER Example prmis@microsoft.com
 ################## BEGIN INSTALLATION ######################
-# Update Image
-RUN apt-get update
-RUN apt-get install -y sudo
-RUN apt-get install -y apt-utils
-RUN useradd -m docker && echo "docker:docker" | chpasswd && adduser docker sudo
-RUN echo "docker ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-user docker
+RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+RUN echo 'Asia/Shanghai' >/etc/timezone
+
 # Update depedency of V8
-RUN sudo apt-get install -y \
-				lsb-core \
-				git \
-				python \
-				lbzip2 \
-				curl 	\
-				wget	\
-				xz-utils \
-				zip
-RUN sudo echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | sudo debconf-set-selections
+RUN apt-get update && apt-get install -y \
+	lsb-core \
+	git \
+	python \
+	lbzip2 \
+	curl 	\
+	wget	\
+	xz-utils \
+	zip \
+	sudo \
+	pkg-config \
+	gcc-multilib
 WORKDIR /home/docker
 # Get depot_tool
 RUN git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
@@ -33,16 +31,11 @@ RUN echo $PATH
 # Fetch V8 code
 RUN fetch v8
 RUN echo "target_os= ['android']">>.gclient
-RUN gclient sync
-RUN sudo echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | sudo debconf-set-selections
 # Update V8 depedency
-RUN echo y | sudo /home/docker/v8/build/install-build-deps-android.sh
 WORKDIR /home/docker/v8
-ARG CACHEBUST=1
 # checkout required V8 Branch
-RUN git checkout 8.1.307.28
+RUN git checkout 10.0.139.17
 RUN gclient sync
-#ARG CACHEBUST=1
 
 # ARM64
 RUN python ./tools/dev/v8gen.py arm64.release -vv
@@ -130,5 +123,5 @@ RUN cp ./third_party/android_ndk/sources/cxx-stl/llvm-libc++/libs/x86_64/libc++_
 WORKDIR /home/docker/v8/target/
 RUN zip -r ../v8.zip ./*
 RUN ls -al /home/docker/v8/v8.zip
-#End of docker Command
+# End of docker Command
 
