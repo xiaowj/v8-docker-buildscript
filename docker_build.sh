@@ -1,8 +1,8 @@
 #!/bin/sh
-# removing old alias
+# removing old container
 docker rm v8docker
 # CACHEBUST=`date +%s`
-docker build . -t v8_docker --build-arg CACHEBUST=1
+docker build . -t v8_docker --network host
 # point v8docker to the latest version
 docker run -d --name v8docker v8_docker:latest
 # copy results out of the container
