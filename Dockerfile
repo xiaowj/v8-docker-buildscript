@@ -3,7 +3,7 @@
 # Based on Ubuntu
 ############################################################
 # Set the base image to Ubuntu
-FROM ubuntu:20.04
+FROM ubuntu:18.04
 # File Author / Maintainer
 LABEL cc.wuyifei.v8build.android.image.authors="wuyifei.cc@gmail.com"
 ################## BEGIN INSTALLATION ######################
@@ -20,7 +20,13 @@ RUN apt-get update && apt-get install -y \
 	sudo \
 	pkg-config \
 	zip	\
-	vim
+	vim \
+	apt-utils
+
+RUN useradd -rm -d /home/docker -s /bin/bash -g root -G sudo -u 1000 docker
+RUN echo "docker ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+USER docker
+
 WORKDIR /home/docker
 # Get depot_tool
 RUN git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
@@ -31,7 +37,7 @@ RUN echo "target_os= ['android']">>.gclient
 # Update V8 depedency
 WORKDIR /home/docker/v8
 # checkout required V8 Branch
-RUN git checkout branch-heads/9.0
+RUN git checkout 8.2.297.3
 RUN gclient sync -D
 
 WORKDIR /home/docker/v8/build
